@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+## Prepending branch ticket numbers to commit message.
+#
+## Ex: Branch = Bugfix/Test-123-fix-the-Bugfix
+## Commit msg = Test-123 : Your Commit msg
+#
+
+# Grab the branch name | Get after after the first / to skip the branch type
+branch=$(git symbolic-ref --short HEAD)
+branch="${branch##*/}"
+
+# Allows the Project key and ticket number then get rid of everything after it
+trimmed=$(echo $branch | sed -e 's/^\([^-]*-[^-]*\)-.*/\1/' -e \ 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/')
+
+# Make sure there's still a string after the trim | Use sed -i to make an insert to the file and prepend the trim to the commit
+if [ -n "$trimmed" ]; then
+  sed -i .bak -e "1s/^/$trimmed : /" $1
+fi
