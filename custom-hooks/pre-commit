@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+## Check for certain keywords before commiting.
+#
+
+# Swap out or add files and keywords you want to search
+FILES_PATTERN='\.(js)(\..+)?$'
+FORBIDDEN='debugger\|alert(\|console\.[clear|dir|log|info|warn|error]'
+
+# Check for the Forbidden keywords else reject!
+if git diff --cached --name-only | \
+    grep -E $FILES_PATTERN | \
+    xargs grep --with-filename -n $FORBIDDEN | \
+    grep -v '//';
+then
+    echo 'COMMIT REJECTED! Please fix errors above'
+    exit 1;
+fi
+exit 0;
